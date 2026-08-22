@@ -1,0 +1,6 @@
+Main formula: de/dw = de/dY^ * dY^/dw
+e = loss     w = weight     Y^ = predicted value     Y = expected value        d =  derivada/derivative 
+
+.mean() = calculate arithmetic mean (library numpy)
+
+epochs = number os times that the model will train
