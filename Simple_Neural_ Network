@@ -1,0 +1,19 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.style.use('dark_background')
+plt.rcParams['figure.figsize'] = (12, 10)
+
+
+#Creating dataset
+
+def linear_curve(x, y, z=0, noise_scale=0):
+    return y * x + z + noise_scale * np.random.randn(x.shape[0])
+
+x = np.arange(-20, 31, 0.5)
+Y = linear_curve(x, 1.8, 32, noise_scale=5)
+
+plt.plot(x, Y) # mostra uma linha continua
+plt.scatter(x, Y) # mostra ponto por ponto
+plt.xlabel("°C", fontsize=20)
+plt.ylabel("°F", fontsize=20)
