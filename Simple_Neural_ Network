@@ -1,42 +1,52 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.style.use('dark_background')
-plt.rcParams['figure.figsize'] = (12, 10)
-
-
-#Creating dataset
-
-def linear_curve(x, y, z=0, noise_scale=0):
+def linear_curve(x, y, z=0, noise_scale=0):  #graph
     return y * x + z + noise_scale * np.random.randn(x.shape[0])
-
-x = np.arange(-20, 31, 0.5)
-Y = linear_curve(x, 1.8, 32, noise_scale=5)
-
-plt.plot(x, Y) # mostra uma linha continua
-plt.scatter(x, Y) # mostra ponto por ponto
-plt.xlabel("°C", fontsize=20)
-plt.ylabel("°F", fontsize=20)
-
-#---------------------------------------------------------------------
 
 #creating model
 
+def forward(inputs, weight, bias): #Weight
+  return weight * inputs + bias
+  
+
+def model_loss(real, predict): #minimum screen error ==== loss
+    return (real - predict) ** 2
+
+
+def back_propagation(inputs, outputs, expected_values, weight, bias, learning_rate):
+  dw = learning_rate * (-2 * inputs * (expected_values - outputs)).mean() #derivative weight
+  db = learning_rate * (-2 * (expected_values - outputs)).mean() #derivative weight
+  
+  weight -= dw #updating weight
+  bias -= db #updating bias
+  return weight, bias
+
+
+def model_training(input, expected_values, weight, bias, epochs = 300, learning_rate = 0.001):
+  for epoch in range(epochs):
+    outputs = forward(input, weight, bias)
+    loss = np.mean(model_loss(expected_values, outputs))
+    weight, bias = back_propagation(input, outputs, expected_values, weight, bias, learning_rate)
+    
+    percentage = int((epoch + 1)/ epochs * 100)
+    if (epoch + 1) % (epochs/10) == 0:
+      print(f"{percentage}% or {epoch + 1}/{epochs} epochs -> loss = {loss:.4f}")
+
+  return weight, bias, loss
+
+plt.style.use('dark_background')
+plt.rcParams['figure.figsize'] = (8, 6)
+
+
+#inicialization
+x = np.arange(-20, 31, 0.5)
+Y = linear_curve(x, 1.8, 32, noise_scale=5)
 weight = np.random.rand(1)
 bias = 0
 
-def forward(inputs, weight, bias): #Weight
-  weight * inputs + bias
+weight, bias, loss = model_training(x, Y, weight, bias, epochs = 5000, learning_rate=0.001)
+print(f"End of training -> Weight = {weight[0]:.4f}, Bias = {bias:.4f}, Loss = {loss:.4f}")
 
-def mse(real, predict): #minimum screen error ==== loss
-    return (real - predict) ** 2
-
-r = np.array([3, 4, 5])
-p = np.array([3.3, 3.8, 5.1])
-
-def back_propagation(inputs, outputs, expected_values, learn_rate):
-  dw = learn_rate * (-2 * inputs * (expected_values - outputs)).mean() #derivative weight
-  db = learn_rate * (-2 * (expected_values - outputs)).mean() #derivative weight
-  
-  w -= dw #updating weight
-  b -= db #updating bias
+plt.scatter(x, Y)
+plt.plot(x, linear_curve(x, weight, bias), 'r', lw=3) #lw = line width
